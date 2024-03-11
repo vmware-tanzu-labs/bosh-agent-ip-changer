@@ -65,13 +65,5 @@ func (c *ChangeIP) Execute([]string) error {
 
 		}
 	}
-	//ctx := context.Background()
-
-	// c, err := m.combinedConfig()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// return migrate.RunFoundationMigrationWithConfig(c, ctx)
 	return nil
 }

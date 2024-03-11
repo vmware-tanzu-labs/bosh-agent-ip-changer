@@ -15,25 +15,6 @@ type credential struct {
 }
 
 func (c *Client) VMs() (map[string][]bosh.VM, error) {
-	result := make(map[string][]bosh.VM)
-	// if 1 == 1 {
-	// 	result["cf-5b956dcfa0d793306829"] = []bosh.VM{
-	// 		{
-	// 			Deployment: "cf-5b956dcfa0d793306829",
-	// 			JobName:    "diego_cell",
-	// 			JobState:   "running",
-	// 			IPs:        []string{"192.168.2.38"},
-	// 		},
-	// 		{
-	// 			Deployment: "cf-5b956dcfa0d793306829",
-	// 			JobName:    "cloud_controller",
-	// 			JobState:   "unresponsive agent",
-	// 			IPs:        []string{"192.168.2.25"},
-	// 		},
-	// 	}
-	// 	return result, nil
-	// }
-
 	req, err := http.NewRequest("GET", "/api/v0/deployed/director/credentials/bosh_commandline_credentials", nil)
 	if err != nil {
 		return nil, err
