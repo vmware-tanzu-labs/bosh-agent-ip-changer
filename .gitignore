@@ -1,0 +1,4 @@
+bin
+.envrc
+id_rsa
+test-binary.sh
