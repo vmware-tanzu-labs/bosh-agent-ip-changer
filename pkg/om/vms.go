@@ -15,6 +15,8 @@ type credential struct {
 }
 
 func (c *Client) VMs() (map[string][]bosh.VM, error) {
+	result := make(map[string][]bosh.VM)
+
 	req, err := http.NewRequest("GET", "/api/v0/deployed/director/credentials/bosh_commandline_credentials", nil)
 	if err != nil {
 		return nil, err
