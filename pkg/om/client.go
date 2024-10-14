@@ -5,10 +5,10 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -173,7 +173,7 @@ func setCACert(caCert string, tlsConfig *tls.Config) error {
 		caCertPool = x509.NewCertPool()
 	}
 	if !strings.Contains(caCert, "BEGIN") {
-		contents, err := ioutil.ReadFile(caCert)
+		contents, err := os.ReadFile(caCert)
 		if err != nil {
 			return fmt.Errorf("could not load ca cert from file: %s", err)
 		}

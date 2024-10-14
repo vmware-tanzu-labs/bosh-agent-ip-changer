@@ -3,11 +3,11 @@ package om
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
-	"github.com/vmware-tanzu-labs/bosh-agent-ip-changer/pkg/bosh"
+	"github.com/vmware-tanzu-labs/opsman-utils/pkg/bosh"
 )
 
 type credential struct {
@@ -28,7 +28,7 @@ func (c *Client) VMs() (map[string][]bosh.VM, error) {
 	}
 	defer resp.Body.Close()
 
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

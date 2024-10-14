@@ -5,12 +5,12 @@ import (
 	"os"
 
 	goflags "github.com/jessevdk/go-flags"
-	"github.com/vmware-tanzu-labs/bosh-agent-ip-changer/command"
+	"github.com/vmware-tanzu-labs/opsman-utils/command"
 )
 
 type CommandHolder struct {
-	Version  command.VersionCommand `command:"version" description:"Print version information and exit"`
-	ChangeIP command.ChangeIP       `command:"changeIP" description:"Changes the bosh agent configuration when bosh IP address changes"`
+	Version      command.VersionCommand `command:"version" description:"Print version information and exit"`
+	UpdateBoshIP command.UpdateBoshIP   `command:"update-bosh-ip" description:"Updates every bosh agent to use the specified BOSH Director IP"`
 }
 
 var Command CommandHolder

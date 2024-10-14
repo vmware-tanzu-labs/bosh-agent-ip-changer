@@ -1,4 +1,4 @@
-module github.com/vmware-tanzu-labs/bosh-agent-ip-changer
+module github.com/vmware-tanzu-labs/opsman-utils
 
 go 1.22.0
 
