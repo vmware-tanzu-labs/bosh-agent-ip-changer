@@ -11,6 +11,10 @@ var COMMIT = "dev"
 type VersionCommand struct {
 }
 
+func NewVersionCommand() *VersionCommand {
+	return &VersionCommand{}
+}
+
 // Execute - returns the version
 func (c *VersionCommand) Execute([]string) error {
 	fmt.Println(GetFormattedVersion())

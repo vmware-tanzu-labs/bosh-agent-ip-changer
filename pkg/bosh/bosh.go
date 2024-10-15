@@ -51,11 +51,11 @@ func (c *Client) GetAllVMs() ([]VM, error) {
 		for _, vm := range vms {
 			instanceName := vm.JobName + "/" + vm.ID
 			r = append(r, VM{
-				InstanceName: instanceName,
-				JobName:      vm.JobName,
-				Deployment:   d.Name,
-				IPs:          vm.IPs,
-				JobState:     vm.JobState,
+				InstanceName:  instanceName,
+				InstanceGroup: vm.JobName,
+				Deployment:    d.Name,
+				IPs:           vm.IPs,
+				JobState:      vm.JobState,
 			})
 		}
 	}
