@@ -4,6 +4,7 @@ import (
 	"errors"
 	goflags "github.com/jessevdk/go-flags"
 	"github.com/vmware-tanzu-labs/opsman-utils/pkg/om"
+	"github.com/vmware-tanzu-labs/opsman-utils/pkg/ssh"
 	"os"
 )
 
@@ -49,18 +50,28 @@ func Main(args []string) error {
 		global.SkipSSLValidation,
 		global.CACert)
 
+	sshClient := ssh.New()
+
 	_, err := parser.AddCommand("update-bosh-ip",
+		"Updates bosh agents to new Director IP",
 		"Updates every bosh agent to use the specified BOSH Director IP",
-		"Updates every bosh agent to use the specified BOSH Director IP",
-		NewUpdateBoshIPCommand(omClient))
+		NewUpdateBoshIPCommand(omClient, sshClient))
 	if err != nil {
 		return err
 	}
 
 	_, err = parser.AddCommand("find-and-replace",
+		"Performs a text find and replace operation",
 		"Performs a text find and replace operation against the specified instances",
-		"Performs a text find and replace operation against the specified instances",
-		NewFindAndReplaceCommand(omClient))
+		NewFindAndReplaceCommand(omClient, sshClient))
+	if err != nil {
+		return err
+	}
+
+	_, err = parser.AddCommand("execute",
+		"Executes the specified command(s)",
+		"Executes the specified command(s) on each specified instance",
+		NewExecuteCommand(omClient, sshClient))
 	if err != nil {
 		return err
 	}

@@ -3,18 +3,20 @@ package command
 import (
 	"fmt"
 	"github.com/vmware-tanzu-labs/opsman-utils/pkg/om"
+	"github.com/vmware-tanzu-labs/opsman-utils/pkg/ssh"
 	"github.com/vmware-tanzu-labs/opsman-utils/pkg/vm"
 )
 
 type UpdateBoshIP struct {
-	omClient *om.Client
-	Options  struct {
+	omClient      *om.Client
+	sshConnection *ssh.Connection
+	Options       struct {
 		OldDirectorIP string `long:"old-director-ip"   description:"previous ip of bosh director" required:"true"`
 		NewDirectorIP string `long:"new-director-ip"   description:"new ip of bosh director" required:"true"`
 	}
 }
 
-func NewUpdateBoshIPCommand(omClient *om.Client) *UpdateBoshIP {
+func NewUpdateBoshIPCommand(omClient *om.Client, sshConnection *ssh.Connection) *UpdateBoshIP {
 	return &UpdateBoshIP{
 		omClient: omClient,
 	}
@@ -29,6 +31,7 @@ func (u *UpdateBoshIP) Execute([]string) error {
 		"sudo killall -9 bosh-agent",
 	}
 
-	runner := vm.NewRunner(u.omClient)
-	return runner.Execute(commands, vm.Filter{})
+	runner := vm.NewRunner(u.omClient, u.sshConnection)
+	_, err := runner.Execute(commands, vm.Filter{})
+	return err
 }

@@ -1,32 +1,48 @@
 package vm
 
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
 import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/vmware-tanzu-labs/opsman-utils/pkg/om"
-	"github.com/vmware-tanzu-labs/opsman-utils/pkg/ssh"
+	"github.com/vmware-tanzu-labs/opsman-utils/pkg/bosh"
 )
 
-type Runner struct {
-	omClient *om.Client
+const boshUser = "vcap"
+
+//counterfeiter:generate . OpsMan
+type OpsMan interface {
+	VMs() (map[string][]bosh.VM, error)
+	VMCredentials(deployment, instanceGroup string) (string, error)
 }
 
-func NewRunner(omClient *om.Client) *Runner {
+//counterfeiter:generate . SSHRunner
+type SSHRunner interface {
+	Execute(address, user, password string, commands ...string) error
+}
+
+type Runner struct {
+	omClient  OpsMan
+	sshClient SSHRunner
+}
+
+func NewRunner(omClient OpsMan, sshClient SSHRunner) *Runner {
 	return &Runner{
-		omClient: omClient,
+		omClient:  omClient,
+		sshClient: sshClient,
 	}
 }
 
 // Execute runs the commands on all the VMs that match the specified filters
-func (r Runner) Execute(commands []string, filter Filter) error {
+func (r Runner) Execute(commands []string, filter Filter) (int, error) {
 	if commands == nil || len(commands) == 0 {
-		return errors.New("no commands to execute")
+		return 0, errors.New("no commands to execute")
 	}
 
 	boshVMs, err := r.omClient.VMs()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	count := 0
@@ -41,16 +57,13 @@ func (r Runner) Execute(commands []string, filter Filter) error {
 			log.Infof("Processing vm %s of deployment %s", vm.InstanceName, deployment)
 			password, err := r.omClient.VMCredentials(deployment, vm.InstanceGroup)
 			if err != nil {
-				return err
+				return count, err
 			}
 
-			conn, err := ssh.Connect(fmt.Sprintf("%s:22", vm.IPs[0]), "vcap", password)
+			addr := fmt.Sprintf("%s:22", vm.IPs[0])
+			err = r.sshClient.Execute(addr, boshUser, password, commands...)
 			if err != nil {
-				return err
-			}
-			_, err = conn.SendCommands(commands...)
-			if err != nil {
-				return err
+				return count, err
 			}
 			count++
 		}
@@ -58,5 +71,5 @@ func (r Runner) Execute(commands []string, filter Filter) error {
 
 	log.Infof("Processed %d vms", count)
 
-	return nil
+	return count, nil
 }

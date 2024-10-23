@@ -3,12 +3,14 @@ package command
 import (
 	"fmt"
 	"github.com/vmware-tanzu-labs/opsman-utils/pkg/om"
+	"github.com/vmware-tanzu-labs/opsman-utils/pkg/ssh"
 	"github.com/vmware-tanzu-labs/opsman-utils/pkg/vm"
 )
 
 type FindAndReplace struct {
-	omClient *om.Client
-	Options  struct {
+	omClient      *om.Client
+	sshConnection *ssh.Connection
+	Options       struct {
 		FilePath          string   `long:"file-path"          description:"full file path to perform the find and replace operation on" required:"true"`
 		ReplaceExpression string   `long:"replace-expression" description:"find and replace expression using sed syntax"                required:"true"`
 		Deployment        string   `long:"deployment"         description:"optional deployment name to filter by"                       required:"false"`
@@ -17,7 +19,7 @@ type FindAndReplace struct {
 	}
 }
 
-func NewFindAndReplaceCommand(omClient *om.Client) *FindAndReplace {
+func NewFindAndReplaceCommand(omClient *om.Client, sshConnection *ssh.Connection) *FindAndReplace {
 	return &FindAndReplace{
 		omClient: omClient,
 	}
@@ -37,6 +39,7 @@ func (f *FindAndReplace) Execute([]string) error {
 		InstanceGroups: f.Options.InstanceGroup,
 	}
 
-	runner := vm.NewRunner(f.omClient)
-	return runner.Execute(commands, filter)
+	runner := vm.NewRunner(f.omClient, f.sshConnection)
+	_, err := runner.Execute(commands, filter)
+	return err
 }
