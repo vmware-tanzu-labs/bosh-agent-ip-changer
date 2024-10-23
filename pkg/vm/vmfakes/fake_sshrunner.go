@@ -8,7 +8,7 @@ import (
 )
 
 type FakeSSHRunner struct {
-	ExecuteStub        func(string, string, string, ...string) error
+	ExecuteStub        func(string, string, string, ...string) ([]byte, error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
 		arg1 string
@@ -17,16 +17,18 @@ type FakeSSHRunner struct {
 		arg4 []string
 	}
 	executeReturns struct {
-		result1 error
+		result1 []byte
+		result2 error
 	}
 	executeReturnsOnCall map[int]struct {
-		result1 error
+		result1 []byte
+		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeSSHRunner) Execute(arg1 string, arg2 string, arg3 string, arg4 ...string) error {
+func (fake *FakeSSHRunner) Execute(arg1 string, arg2 string, arg3 string, arg4 ...string) ([]byte, error) {
 	fake.executeMutex.Lock()
 	ret, specificReturn := fake.executeReturnsOnCall[len(fake.executeArgsForCall)]
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
@@ -43,9 +45,9 @@ func (fake *FakeSSHRunner) Execute(arg1 string, arg2 string, arg3 string, arg4 .
 		return stub(arg1, arg2, arg3, arg4...)
 	}
 	if specificReturn {
-		return ret.result1
+		return ret.result1, ret.result2
 	}
-	return fakeReturns.result1
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeSSHRunner) ExecuteCallCount() int {
@@ -54,7 +56,7 @@ func (fake *FakeSSHRunner) ExecuteCallCount() int {
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *FakeSSHRunner) ExecuteCalls(stub func(string, string, string, ...string) error) {
+func (fake *FakeSSHRunner) ExecuteCalls(stub func(string, string, string, ...string) ([]byte, error)) {
 	fake.executeMutex.Lock()
 	defer fake.executeMutex.Unlock()
 	fake.ExecuteStub = stub
@@ -67,27 +69,30 @@ func (fake *FakeSSHRunner) ExecuteArgsForCall(i int) (string, string, string, []
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
-func (fake *FakeSSHRunner) ExecuteReturns(result1 error) {
+func (fake *FakeSSHRunner) ExecuteReturns(result1 []byte, result2 error) {
 	fake.executeMutex.Lock()
 	defer fake.executeMutex.Unlock()
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
-		result1 error
-	}{result1}
+		result1 []byte
+		result2 error
+	}{result1, result2}
 }
 
-func (fake *FakeSSHRunner) ExecuteReturnsOnCall(i int, result1 error) {
+func (fake *FakeSSHRunner) ExecuteReturnsOnCall(i int, result1 []byte, result2 error) {
 	fake.executeMutex.Lock()
 	defer fake.executeMutex.Unlock()
 	fake.ExecuteStub = nil
 	if fake.executeReturnsOnCall == nil {
 		fake.executeReturnsOnCall = make(map[int]struct {
-			result1 error
+			result1 []byte
+			result2 error
 		})
 	}
 	fake.executeReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
+		result1 []byte
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeSSHRunner) Invocations() map[string][][]interface{} {

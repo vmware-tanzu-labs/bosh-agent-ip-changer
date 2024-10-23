@@ -19,7 +19,7 @@ type OpsMan interface {
 
 //counterfeiter:generate . SSHRunner
 type SSHRunner interface {
-	Execute(address, user, password string, commands ...string) error
+	Execute(address, user, password string, commands ...string) ([]byte, error)
 }
 
 type Runner struct {
@@ -61,7 +61,7 @@ func (r Runner) Execute(commands []string, filter Filter) (int, error) {
 			}
 
 			addr := fmt.Sprintf("%s:22", vm.IPs[0])
-			err = r.sshClient.Execute(addr, boshUser, password, commands...)
+			_, err = r.sshClient.Execute(addr, boshUser, password, commands...)
 			if err != nil {
 				return count, err
 			}

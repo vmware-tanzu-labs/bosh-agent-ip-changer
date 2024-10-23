@@ -17,7 +17,7 @@ func New() *Connection {
 	return &Connection{}
 }
 
-func (c *Connection) Execute(address, user, password string, commands ...string) error {
+func (c *Connection) Execute(address, user, password string, commands ...string) ([]byte, error) {
 	sshConfig := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
@@ -27,7 +27,7 @@ func (c *Connection) Execute(address, user, password string, commands ...string)
 	}
 	conn, err := ssh.Dial("tcp", address, sshConfig)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	session, err := conn.NewSession()
@@ -44,7 +44,7 @@ func (c *Connection) Execute(address, user, password string, commands ...string)
 
 	err = session.RequestPty("xterm", 80, 40, modes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	in, err := session.StdinPipe()
@@ -91,8 +91,8 @@ func (c *Connection) Execute(address, user, password string, commands ...string)
 	cmd := strings.Join(commands, "; ")
 	_, err = session.Output(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return output, nil
 }
