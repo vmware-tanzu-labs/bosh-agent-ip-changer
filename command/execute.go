@@ -17,8 +17,8 @@ type Execute struct {
 	}
 }
 
-func NewExecuteCommand(omClient *om.Client, sshConnection *ssh.Connection) *FindAndReplace {
-	return &FindAndReplace{
+func NewExecuteCommand(omClient *om.Client, sshConnection *ssh.Connection) *Execute {
+	return &Execute{
 		omClient:      omClient,
 		sshConnection: sshConnection,
 	}
