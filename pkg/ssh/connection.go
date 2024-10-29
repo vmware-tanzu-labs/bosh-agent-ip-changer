@@ -2,10 +2,14 @@ package ssh
 
 import (
 	"bufio"
+	"context"
+	boshhttp "github.com/cloudfoundry/bosh-utils/httpclient"
+	proxy "github.com/cloudfoundry/socks5-proxy"
 	"io"
 	"log"
 	"net"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -25,14 +29,15 @@ func (c *Connection) Execute(address, user, password string, commands ...string)
 		},
 		HostKeyCallback: ssh.HostKeyCallback(func(hostname string, remote net.Addr, key ssh.PublicKey) error { return nil }),
 	}
-	conn, err := ssh.Dial("tcp", address, sshConfig)
+
+	conn, err := newSSHClient(address, sshConfig)
 	if err != nil {
 		return nil, err
 	}
 
 	session, err := conn.NewSession()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer func() { _ = session.Close() }()
 
@@ -49,12 +54,12 @@ func (c *Connection) Execute(address, user, password string, commands ...string)
 
 	in, err := session.StdinPipe()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	out, err := session.StdoutPipe()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	var output []byte
@@ -95,4 +100,24 @@ func (c *Connection) Execute(address, user, password string, commands ...string)
 	}
 
 	return output, nil
+}
+
+func newSSHClient(address string, sshConfig *ssh.ClientConfig) (*ssh.Client, error) {
+	dialer := net.Dialer{}
+	dialContextFunc := dialer.DialContext
+
+	socksProxy := proxy.NewSocks5Proxy(proxy.NewHostKey(), log.New(io.Discard, "", log.LstdFlags), 1*time.Minute)
+	dialContextFunc = boshhttp.SOCKS5DialContextFuncFromEnvironment(&net.Dialer{}, socksProxy)
+
+	conn, err := dialContextFunc(context.Background(), "tcp", address)
+	if err != nil {
+		return nil, err
+	}
+
+	c, ch, reqs, err := ssh.NewClientConn(conn, address, sshConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return ssh.NewClient(c, ch, reqs), nil
 }
