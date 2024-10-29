@@ -38,7 +38,7 @@ require (
 )
 
 require (
-	github.com/cloudfoundry-community/gogobosh v0.0.0-20230404001200-d50e93bedc11
+	github.com/cloudfoundry-community/gogobosh v0.0.0-20241029224830-82866ed2d523
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/sys v0.26.0 // indirect
