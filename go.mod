@@ -1,7 +1,6 @@
 module github.com/vmware-tanzu-labs/opsman-utils
 
 go 1.23
-
 toolchain go1.23.1
 
 require (
@@ -10,7 +9,7 @@ require (
 	github.com/cloudfoundry/socks5-proxy v0.2.129
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.10.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.28.0
+	golang.org/x/crypto v0.35.0
 	golang.org/x/oauth2 v0.16.0
 )
 
@@ -28,9 +27,9 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	golang.org/x/mod v0.21.0 // indirect
-	golang.org/x/net v0.30.0 // indirect
-	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/tools v0.26.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
@@ -41,5 +40,5 @@ require (
 	github.com/cloudfoundry-community/gogobosh v0.0.0-20241029224830-82866ed2d523
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/sirupsen/logrus v1.9.3
-	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 )
